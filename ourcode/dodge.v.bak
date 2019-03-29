@@ -1,0 +1,191 @@
+module dodge(CLK_50, KEY);
+	
+endmodule
+
+module initalizeBoarder(clk, color, x, y, plot);
+	input clk;
+	output reg [2:0] color;
+	output reg [7:0] x;
+	output reg [6:0] y;
+	output reg plot;
+	
+	reg [3:0] total_counter;
+	reg [2:0] current_state, next_state;
+	reg [7:0] plot_counter;
+	
+	localparam 	PLOTROW		= 3'd0,
+				DETERMINE1	= 3'd1,
+				PLOTCOLUMN	= 3'd2,
+				DETERMINE2  = 3'd3,
+				RESTING	 	= 3'd4,
+
+	
+	always @(posedge clk)
+	begin: state
+		case (current_state)
+			PLOTROW: next_state = (plot_counter == 6'd39) ? DETERMINE1 : PLOTROW;
+			DETERMINE1: next_state = (total_counter == 4'd3) ? PLOTCOLUMN : PLOTROW;
+			PLOTCOLUMN: next_state = (plot_counter == 8'd79) ? DETERMINE2 : PLOTCOLUMN;
+			DETERMINE2: next_state = (total_counter == 4'd7) ? RESTING : PLOTCOLUMN;
+			default: next_state = RESTING;
+		endcase
+	end
+	
+	always @(*)
+	begin: make_output
+		case (current_state)
+			PLOTROW: begin
+				if (total_counter == 1'd0) begin
+					y <= 6'd18;
+					x <= 6'd60 + plot_counter
+				end
+				else if (total_counter == 1'd1) begin
+					y <= 6'd19;
+					x <= 6'd60 + plot_counter
+				end
+				else if (total_counter == 4'd2) begin
+					y <= 7'd100;
+					x <= 6'd60 + plot_counter
+				end
+				else if (total_counter == 4'd3) begin
+					y <= 7'd101;
+					x <= 6'd60 + plot_counter
+				end
+				plot_counter <= plot_counter+1;
+			end
+			DETERMINE1: begin
+				plot_counter <= 1'd0;
+				total_counter <= total_counter+1;
+			end
+			PLOTCOLUMN: begin
+				if (total_counter == 4'd4) begin
+					x <= 6'd58;
+					y <= 6'd18 + plot_counter
+				end
+				else if (total_counter == 4'd5) begin
+					x <= 6'd59;
+					y <= 6'd18 + plot_counter
+				end
+				else if (total_counter == 4'd6) begin
+					x <= 7'd100;
+					y <= 6'd18 + plot_counter
+				end
+				else begin
+					x <= 7'd101;
+					y <= 6'd18 + plot_counter
+				end
+				plot_counter <= plot_counter+1;
+			end
+			DETERMINE2: begin
+				plot_counter <= 1'd0;
+				total_counter <= total_counter+1;
+			end
+			default: begin
+				color <= 3'd0;
+			end
+		endcase
+	end
+	
+	assign color = 3'd7;
+	assign plot = (current_state == PLOTROW or current_state == PLOTCOLUMN);
+	
+	always@(posedge clk)
+		current_state <= next_state;
+endmodule
+
+
+module drawBoard(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, clk, color, x, y, plot);
+	input [9:0] r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20;
+	input clk;
+	output reg [2:0] color;
+	output reg [7:0] x;
+	output reg [6:0] y;
+	output reg plot;
+	
+	reg [9:0] rowList [19:0];
+
+	signed reg [4:0] column;
+	reg [4:0] row;
+	reg [2:0] current_state, next_state;
+	reg [3:0] plotCounter;
+	reg [9:0] rowData;
+	assign rowData = r1;
+
+	localparam 	ROWCHECK	= 3'd0,
+				PLOTROW		= 3'd1,
+				DETERMINE1	= 3'd2,
+				NEXTROW     = 3'd3,
+				PLOTNEXTROW = 3'd4,
+				DETERMINE2  = 3'd5,
+				RESTING 	= 3'd6;
+	
+	always @(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20)
+		next_state = ROWCHECK;
+		rowList = {r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20};
+	
+	always @(posedge clk)
+	begin: state
+		case (current_state)
+			ROWCHECK: next_state = PLOTROW;
+			PLOTROW: next_state = (plotCounter == 4'd15) ? DETERMINE1 : PLOTROW;
+			DETERMINE1: next_state = (column == 4'd9) ? NEXTROW : ROWCHECK;
+			NEXTROW: next_state = PLOTNEXTROW;
+			PLOTNEXTROW: next_state = (plotCounter == 4'd15) ? DETERMINE2 : PLOTNEXTROW;
+			DETERMINE2: next_state = (row == 5'd19) ? RESTING : ROWCHECK;
+			default: next_state = RESTING;
+		endcase
+	end
+	
+	// plot
+	assign plot = (current_state == PLOTROW or current_state == PLOTNEXTROW);
+	assign baseX = 6'd60;
+	assign baseY = 6'd20;
+	
+	always @(*)
+	begin: make_output
+		case (current_state)
+			ROWCHECK: begin
+				column <= column+1;
+				if (rowList[row][column] == 1'd1)
+					color = 3'd4;
+				else
+					color = 3'd0;
+			end
+			PLOTROW: begin
+				x <= baseX + (column*4) + (plotCounter % 4);
+				y <= baseY + (row*4) + (plotCounter / 4);
+				plotCounter <= plotCount+1;
+			end
+			DETERMINE1: begin
+				plotCounter <= 1'd0;
+			end
+			NEXTROW: begin
+				column <= 1'd0;
+				row <= row+1;
+				if (rowList[row][column] == 1'd1)
+					color = 3'd4;
+				else
+					color = 3'd0;
+			end
+			PLOTNEXTROW: begin
+				x <= baseX + (column*4) + (plotCounter % 4);
+				y <= baseY + (row*4) + (plotCounter / 4);
+				plotCounter <= plotCount+1;
+			end
+			DETERMINE2: begin
+				plotCounter <= 1'd0;
+			end
+			RESTING: begin
+				row <= 1'd0;
+				column <= -1'd1;
+			end
+			default: begin
+				color = 3'd0;
+			end
+		endcase
+	end
+	
+	always@(posedge clk)
+		current_state <= next_state;
+
+endmodule
