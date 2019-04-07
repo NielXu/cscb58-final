@@ -1,0 +1,92 @@
+CSCB58 Project Report: Winter 2019
+
+Team Member A
+-------------
+First Name: JiaZheng 
+Last Name:Li
+Student Number: 1003265619
+UofT E-mail Address: markjz.li@mail.utoronto.ca
+
+
+Team Member B
+-------------
+First Name: Junxing
+Last Name:Xu
+Student Number:1004019028
+UofT E-mail Address:junxing.xu@mail.utoronto.ca
+
+Team Member C 
+-------------
+First Name: Tianfang
+Last Name:Lan
+Student Number:1002687210
+UofT E-mail Address:tianfang.lan@gmail.utoronto.ca
+
+
+
+Project Plan
+--------
+
+Project Title: Tetris
+
+
+Provide a one paragraph description of your project: 
+The project aimed to create the classic tile matching puzzle game. The player's objective is to score as many points as possible by manipulating tiles to clear horizontal rows
+The game is responsible for randomly generating tetris tiles and slowly dropping them. During this time, players are allowed to use a keyboard to direct tile movements and
+rotations with intent of clearing lines to score points. Game will terminate when tiles cannot be generated on to the board anymore due to board being overflowed with tiles.
+
+
+What is your plan for the first week?
+The plan for first week was to set up all the possible blocks that are needed in the tetris; this includes the standard 6 game tiles in the original tetris
+game as well as its rotation shapes. 
+
+What is your plan for the second week?
+The plan for second week was to set up the block movements according to keyboard inputs. This includes proper movements/rotations
+given restrictions of tiles that are already on the board.
+
+What is your plan for the third week?
+The plan for third week was to set up the score system, reset system, and special effects for clearing tiles.
+
+What is your backup plan if things don’t work out as planned?
+The back up plan was to create the game "snake" if things did not work out as planned
+
+
+Weekly Reports
+--------------
+<In this space, provide a report each week of what worked and what didn't, and what (if any) changes were made to your proposal)>
+
+Week 1:
+	We successfully added and tested all game blocks needed in the game by using FSMs to generate them 
+
+Week 2:
+	While we were trying to create logic for block movements, we found it very difficult to debug due to the design of block
+	creation from week 1. Code sanity was not maintained since we had multiple FSMs (at least 15) that were needed to create
+	blocks. As a result, we changed our approach to the game design. Instead of focusing on where each game tile should be
+	moved and drawn, we decided to focus on how to draw the board instead. To do this, we used a 2d matrix that represented
+        the board. 
+
+Week 3:
+	-We successfully initialized and tested the boarder for the game
+	-We unsuccessfully set up a proper block movement system. We underestimated the complexity of calculating the board output
+	because of the numerous variables that needs to be accounted for (E.g. Calculate proper/legal tile movements given restrictions
+	of the board, and the type of block that is being maneuvered). 
+	-We found a lack of time to use our backup plan(snake game). As a result, we decided to use what we already have to create a
+	a dodging game. This game is similar to Tetris with random shapes dropping. However, this time around, the user's objective
+	is to dodge the incoming shapes that are dropping.
+	-While testing our new version of the game, we couldn't display any image on VGA anymore. We were unsuccessful in debugging
+	the problem since we ran out of time. 
+	-The logic for scores and resetting the game were also implemented. However, they couldn't be tested as they were blocked
+	from the previous issue.
+
+
+
+References
+----------
+We did not use any external sources
+
+
+Repo & Video
+------------
+Repo: https://github.com/NielXu/cscb58-final
+Vid: https://www.youtube.com/watch?v=Hz2sbOQNdPs
+
